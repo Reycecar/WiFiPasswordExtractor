@@ -7,7 +7,6 @@ Wi-Fi Password Extractor
 import os
 import subprocess
 import re
-import sys
 import configparser
 from collections import namedtuple
 
