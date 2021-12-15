@@ -24,7 +24,7 @@ def get_saved_ssids_win():
 
 def print_wifi_profile_win(profile):
     #prints a singula wifi profile on windows
-    print(f"{profile.ssid:25}{profile.ciphers:15}{profile.key:50}")
+    print(f"{profile.ssid:25}\t\t{profile.ciphers:15}\t{profile.key:50}")
 
 def get_saved_passwords_win():
     #gets saved Wi-Fi passwords saved on a Windows machine, produses a list of extracted profiles (["ssid", "ciphers", "key"])
@@ -59,17 +59,17 @@ def get_saved_passwords_win():
 
 def get_saved_passwords_lin():
     net_connections_path = "/etc/NetworkManager/system-connections/"
-    options = ["ssid", "auth-alg", "key-mgmt", "psk"]
+    targets = ["ssid", "auth-alg", "key-mgmt", "psk"]
     Profile = namedtuple("Profile", ["ssid", "auth_alg", "key_mgmt", "psk"])
     WiFi_profiles = []
     for file in os.listdir(net_connections_path):
-        data = {o.replace("-", "_"): None for o in options}
+        data = {option.replace("-", "_"):None for option in targets}
         parser = configparser.ConfigParser()
-        parser.read(os.path.join(net_connections_path), file)
+        parser.read(os.path.join(net_connections_path, file))
         for _, section in parser.items():
-            for o, v in section.items():
-                if o in options:
-                    data[o.replace("-", "_")] = v
+            for target, value in section.items():
+                if target in targets:
+                    data[target.replace("-", "_")] = value
 
         WiFi_profile = Profile(**data)
         print_wifi_profile_lin(WiFi_profile)
@@ -78,18 +78,18 @@ def get_saved_passwords_lin():
 
 def print_wifi_profile_lin(profile):
     #prints a singula wifi profile on linux
-    print(f"{str(profile.ssid):25}{str(profile.auth_alg):5}{str(profile.key_mgmt):10}{str(profile.psk):50}")
+    print(f"{str(profile.ssid):25}\t\t{str(profile.auth_alg):5}{str(profile.key_mgmt):10}{str(profile.psk):50}")
         
 def print_wifi_profiles(os):
     #prints the wifi profiles created based on the os of the machine
     
     if(os == "nt"):
-        print("SSID\t\t\t\tCIPHER(S)\tKEY")
-        print("-"*50)
+        print("SSID\t\t\t\t\tCIPHER(S)\tKEY")
+        print("-"*75)
         get_saved_passwords_win()
     else:
-        print("SSID\t\t\t\tAUTH KEY-MGMT\tKEY")
-        print("-"*50)
+        print("SSID\t\t\t\t\tAUTH KEY-MGMT\tKEY")
+        print("-"*75)
         get_saved_passwords_lin()
 
 def main():
@@ -97,7 +97,8 @@ def main():
     
     if(operating_system != "nt" and operating_system != "posix"):
         raise ValueError("Dog, this shit only works for linux or windows, my bad")
-
-    print_wifi_profiles(operating_system)
+    else:
+        print_wifi_profiles(operating_system)
+    
 if __name__ == "__main__":
     main()
